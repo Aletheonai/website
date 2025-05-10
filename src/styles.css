@@ -17,11 +17,12 @@ body {
 /* Navigation Bar */
 /* Base Styles */
 .navbar {
-   position: fixed;
+  position: fixed;
   top: 20px;
   left: 50%;
-  transform: translateX(-50%);
-  background-color: lightgray;
+  transform: translate(-50%, 0);
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  background-color: #f5f5f5;
   border-radius: 12px;
   padding: 0.75rem 2rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -29,19 +30,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 30vw;
-  max-width: 90%;
-  transition: transform 0.3s ease-in-out;
-  gap: 2rem;
+  width: 50vw;
+  opacity: 1;
 }
 
-/* Hide Navbar on Scroll Down */
 .navbar.hidden {
-  transform: translate(-50%, -100px); /* Slide up and out */
+  transform: translate(-50%, -120%); /* Slide up and out smoothly */
   opacity: 0;
   pointer-events: none;
 }
-
 /* Logo Styling */
 .logo {
   font-size: 1.5rem;
@@ -168,7 +165,7 @@ body {
   overflow: hidden;
   padding: 120px 20px;
   text-align: center;
-  background: #fff;
+  background: #f9f9f9;
 }
 
 .hero-bg {

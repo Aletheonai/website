@@ -3,17 +3,24 @@ import React, { useState, useEffect } from 'react';
 function Navbar() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false); // You were missing this state
 
   const controlNavbar = () => {
     if (typeof window !== 'undefined') {
-      if (window.scrollY > lastScrollY) {
-        // if scroll down hide the navbar
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < 10) {
+        // Always show navbar when at top of page
+        setShowNavbar(true);
+      } else if (currentScrollY > lastScrollY) {
+        // Scrolling down
         setShowNavbar(false);
       } else {
-        // if scroll up show the navbar
+        // Scrolling up
         setShowNavbar(true);
       }
-      setLastScrollY(window.scrollY);
+
+      setLastScrollY(currentScrollY);
     }
   };
 
@@ -21,7 +28,6 @@ function Navbar() {
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', controlNavbar);
 
-      // cleanup function
       return () => {
         window.removeEventListener('scroll', controlNavbar);
       };
