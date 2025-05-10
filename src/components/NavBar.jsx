@@ -44,22 +44,29 @@ function Navbar() {
 
   return (
     <header className={`navbar ${showNavbar ? 'active' : 'hidden'}`}>
-      <div className="logo">ΛLETHEΘN</div>
-      <nav>
-        <ul className="nav-links">
-          <li><a href="#hero"><b>Home</b></a></li>
-          <li><a href="#services"><b>Services</b></a></li>
-          <li><a href="#contact"><b>Contact</b></a></li>
-        </ul>
-      </nav>
-      <button 
-        className="menu-toggle" 
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label="Toggle navigation menu"
-      >
-        ☰
-      </button>
-    </header>
+  <div className="logo">ΛLETHEΘN</div>
+
+  {/* Hamburger menu toggle button */}
+  <button 
+    className="menu-toggle"
+    onClick={() => setMobileOpen(!mobileOpen)}
+    aria-label="Toggle navigation menu"
+  >☰</button>
+
+  {/* Navigation links */}
+  <nav>
+    <nav>
+  <ul className={`nav-links ${mobileOpen ? 'open' : ''}`}>
+    <li><a href="#hero" onClick={() => setMobileOpen(false)}>Home</a></li>
+    <li><a href="#services" onClick={() => setMobileOpen(false)}>Services</a></li>
+    <li><a href="#contact" onClick={() => setMobileOpen(false)}>Contact</a></li>
+  </ul>
+</nav>
+
+  </nav>
+</header>
+
+
   );
 }
 
