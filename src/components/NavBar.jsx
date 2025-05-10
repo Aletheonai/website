@@ -9,14 +9,22 @@ function Navbar() {
     if (typeof window !== 'undefined') {
       const currentScrollY = window.scrollY;
 
+      const scrollHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      );
+      const windowHeight = window.innerHeight;
+      const atBottom =
+        Math.abs(currentScrollY + windowHeight - scrollHeight) < 50;
+
       if (currentScrollY < 10) {
-        // Always show navbar when at top of page
         setShowNavbar(true);
       } else if (currentScrollY > lastScrollY) {
-        // Scrolling down
         setShowNavbar(false);
-      } else {
-        // Scrolling up
+      }
+      else if (atBottom) {
+        setShowNavbar(false);
+      } else if (currentScrollY < lastScrollY) {
         setShowNavbar(true);
       }
 
