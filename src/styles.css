@@ -38,6 +38,28 @@ body {
   overflow: hidden;
 }
 
+.navbar.no-logo {
+  justify-content: center;
+}
+
+/* still need to hide the empty logo div */
+.navbar.no-logo .logo {
+  display: none;
+}
+
+.logo {
+  transition: opacity 0.3s ease;
+}
+.nav-links, .menu-toggle {
+  transition: opacity 0.3s ease;
+}
+
+/* when no-logo, fade out those things */
+.navbar.no-logo .logo,
+.navbar.no-logo .menu-toggle {
+  opacity: 0;    /* you can also hide the toggle if desired */
+}
+
 .navbar.hidden {
   transform: translate(-50%, -120%);
   opacity: 0;
@@ -177,7 +199,7 @@ body {
 }
 */
 /* Hero Section */
-
+/*
 .hero {
   position: relative;
   overflow: hidden;
@@ -202,7 +224,7 @@ body {
   z-index: 1;
   max-width: 800px;
   margin: 0 auto;
-}
+}*/
 
 /*.hero {
   position: relative;
@@ -246,7 +268,7 @@ body {
   z-index: 0;
 }
 */
-@keyframes moveBg {
+/*@keyframes moveBg {
   0%   { background-position: 0 0; }
   100% { background-position: 40px 40px; }
 }
@@ -277,6 +299,113 @@ body {
 }
 .cta-button:hover {
   background: #005f99;
+}
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  padding: 100px 20px;
+  background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Main word split */
+/* Container & layout */
+.hero {
+  position: relative;
+  min-height: 100vh;    
+  background: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* hero-inner now centers its children vertically and horizontally */
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* center children horizontally */
+  margin-top: 200px;      /* push everything down */
+  /* remove width:100% */
+}
+
+/* ensure the title itself lays out its letters in the middle */
+.hero-title {
+  display: flex;
+  justify-content: center;  /* center the flex items (letters) */
+  align-items: baseline;
+  gap: 0.2ch;
+  font-size: 6rem;
+  font-weight: 900;
+  margin: 0;
+  perspective: 800px;
+}
+
+/* Each character as its own 3D “card” */
+.char {
+  display: inline-block;
+  color: #666;
+  transform-style: preserve-3d;     /* ← allow 3D transforms */
+  backface-visibility: hidden;      /* ← hide backside when flipped */
+}
+
+.char-blue { color: #007acc; }
+
+/* L/I swap container: stack them */
+.char-swap {
+  display: inline-grid;
+  align-items: baseline;
+  justify-items: start;
+  font-size: inherit;
+  line-height: 1;
+  vertical-align: baseline;
+  margin: 0 0.2ch;
+}
+.char-swap .char {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+/* Subhead & CTA */
+.hero-subhead {
+  margin-top: 2rem;
+  opacity: 0;
+}
+.hero-subhead h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+.cta-button {
+  padding: 12px 24px;
+  background: #007acc;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+.cta-button:hover { background: #005f99; }
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 4rem;
+    gap: 0.1ch;
+  }
+  .hero-subhead h2 { font-size: 2rem; }
+}
+.title-main {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2ch;
 }
 
 /* Main content container (for sections after hero) */
