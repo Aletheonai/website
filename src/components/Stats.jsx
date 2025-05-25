@@ -1,68 +1,114 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import CountUp from 'react-countup';
+import '../styles.css';
 
 const statsData = [
-  { label: 'Projects Delivered', number: 50 },
-  { label: 'AI Models Deployed', number: 25 },
-  { label: 'Clients Served', number: 15 },
+  { label: 'time saved across workflows',    number: 50 },
+  { label: 'reduction in operational costs',  number: 25 },
+  { label: 'improvement in delivery quality', number: 15 },
 ];
 
-function Stats() {
-  const [counts, setCounts] = useState(statsData.map(() => 0));
-  const statsRef = useRef(null);
+const trustLogos = [
+  { src: '/logos/logo1.png', alt: 'Client A' },
+  { src: '/logos/logo2.png', alt: 'Client B' },
+];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        // Animate each counter from 0 to its target number
-        statsData.forEach((stat, idx) => {
-          const duration = 1000;
-          let startTime = null;
-          const step = timestamp => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            const value = Math.floor(progress * stat.number);
-            setCounts(prev => {
-              const newCounts = [...prev];
-              newCounts[idx] = value;
-              return newCounts;
-            });
-            if (progress < 1) {
-              requestAnimationFrame(step);
-            }
-          };
-          requestAnimationFrame(step);
-        });
-        observer.unobserve(entries[0].target);
-      }
-    }, { threshold: 0.3 });
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
-    }
-    return () => observer.disconnect();
-  }, []);
-
+export default function Stats() {
   return (
-    <section className="stats-section" ref={statsRef}>
+    <section className="stats-section">
+      {/* Section heading */}
+      <motion.h2
+        className="stats-heading"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-20% 0px' }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        AI-Powered Impact
+      </motion.h2>
+
+      {/* Stats grid */}
       <div className="stats-grid">
         {statsData.map((stat, idx) => (
-          <motion.div
-            className="stat-item"
+          <StatItem
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="stat-number">
-              {counts[idx]}
-              <span>+</span>
-            </h3>
-            <p className="stat-label">{stat.label}</p>
-          </motion.div>
+            label={stat.label}
+            targetNumber={stat.number}
+            delay={idx * 0.2}
+          />
         ))}
       </div>
+
+      {/* “They trust us” heading */}
+      <motion.h2
+        className="stats-heading"
+        style={{ marginTop: '3rem' }}
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-20% 0px' }}
+        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+      >
+        They trust us
+      </motion.h2>
+
+      {/* Logos */}
+      <motion.div
+        className="logo-container"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-20% 0px' }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.15 } }
+        }}
+      >
+        {trustLogos.map((logo, i) => (
+          <motion.div
+            className="logo-item"
+            key={i}
+            variants={{
+              hidden: { opacity: 0, scale: 0.8 },
+              visible: { opacity: 1, scale: 1 }
+            }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          >
+            <img src={logo.src} alt={logo.alt} />
+          </motion.div>
+        ))}
+      </motion.div>
     </section>
   );
 }
 
-export default Stats;
+function StatItem({ label, targetNumber, delay }) {
+  const ref = useRef(null);
+  // useInView to know when this specific card scrolls into view
+  const inView = useInView(ref, { once: true, margin: '-20% 0px' });
+
+  return (
+    <motion.div
+      className="stat-item"
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-20% 0px' }}
+      transition={{ duration: 0.6, delay }}
+    >
+      <h3 className="stat-number">
+        <span className="stat-prefix">Up to</span>
+        {inView && (
+          <CountUp
+            start={0}
+            end={targetNumber}
+            duration={1}
+            delay={delay}
+            className="stat-value"
+          />
+        )}
+        <span className="stat-suffix">%</span>
+      </h3>
+      <p className="stat-label">{label}</p>
+    </motion.div>
+  );
+}
