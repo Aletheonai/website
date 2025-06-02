@@ -1,100 +1,81 @@
-// src/components/Navbar.jsx
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import '../styles.css';
 
 export default function Navbar() {
-  const headerRef   = useRef(null);
-  const navRef      = useRef(null);
-  const [showNavbar, setShowNavbar]     = useState(true);
-  const [lastScrollY, setLastScrollY]   = useState(0);
-  const [showLogo, setShowLogo]         = useState(false);
-  const [mobileOpen, setMobileOpen]     = useState(false);
-  const [centerOffset, setCenterOffset] = useState(0);
+  const headerRef = useRef(null);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [showLogo, setShowLogo] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [shouldCollapse, setShouldCollapse] = useState(false);
 
-  // 1) Hide/show navbar on scroll-down/up
   useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      if (currentY < 10) {
-        setShowNavbar(true);
-      } else if (currentY > lastScrollY) {
-        setShowNavbar(false);
-      } else {
-        setShowNavbar(true);
-      }
-      setLastScrollY(currentY);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setShowNavbar(y < 10 || y < lastScrollY);
+      setLastScrollY(y);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, [lastScrollY]);
 
-  // 2) IntersectionObserver to toggle the logo (and recenter links)
   useEffect(() => {
     const hero = document.getElementById('hero');
     if (!hero) return;
     const obs = new IntersectionObserver(
       ([entry]) => setShowLogo(entry.intersectionRatio < 0.5),
-      { threshold: [0, 0.5] }
+      { threshold: [0.5] }
     );
     obs.observe(hero);
     return () => obs.disconnect();
   }, []);
 
-  // 3) Measure how far to shift the nav-links so they center under the header
-  useLayoutEffect(() => {
-    const calc = () => {
-      if (!headerRef.current || !navRef.current) return;
-      const hdr = headerRef.current.getBoundingClientRect();
-      const nav = navRef.current.getBoundingClientRect();
-      const hdrCenter = hdr.left + hdr.width/2;
-      const navCenter = nav.left + nav.width/2;
-      setCenterOffset(hdrCenter - navCenter);
+  useEffect(() => {
+    const checkCollapse = () => {
+      setShouldCollapse(window.innerWidth < 640);
     };
-    calc();
-    window.addEventListener('resize', calc);
-    return () => window.removeEventListener('resize', calc);
+    checkCollapse();
+    window.addEventListener('resize', checkCollapse);
+    return () => window.removeEventListener('resize', checkCollapse);
   }, []);
 
   return (
-    <header
-      ref={headerRef}
-      className={`navbar ${showNavbar ? 'active' : 'hidden'}`}
-    >
-      {/* Logo (fades in/out) */}
-      <div
-        className="logo"
-        style={{
-          opacity: showLogo ? 1 : 0,
-          transition: 'opacity 0.3s ease'
-        }}
-      >
-        ΛLETHEΘN
+    <header ref={headerRef} className={`navbar ${showNavbar ? 'active' : 'hidden'}`}>
+      <div className="navbar-content">
+        <div className="logo-wrapper">
+          <span className={`logo-full ${showLogo ? 'visible' : 'hidden'}`}>ΛLETHEΘN</span>
+          <span className={`logo-mini ${!showLogo ? 'visible' : 'hidden'}`}>ΛI</span>
+        </div>
+
+        <div className="link-area justify-right">
+          {!shouldCollapse && (
+            <ul className="nav-links desktop">
+              <li><a href="#hero">Home</a></li>
+              <li><a href="#services">Services</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          )}
+
+          {shouldCollapse && (
+            <div className="menu-wrapper">
+              <button
+                className="menu-toggle"
+                onClick={() => setMobileOpen(prev => !prev)}
+                aria-label="Toggle menu"
+              >
+                ☰
+              </button>
+              {mobileOpen && (
+                <ul className="nav-links mobile-dropdown">
+                  <li><a href="#hero" onClick={() => setMobileOpen(false)}>Home</a></li>
+                  <li><a href="#services" onClick={() => setMobileOpen(false)}>Services</a></li>
+                  <li><a href="#contact" onClick={() => setMobileOpen(false)}>Contact</a></li>
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Hamburger (also tied to showLogo) */}
-      <button
-        className="menu-toggle"
-        onClick={() => setMobileOpen(o => !o)}
-        style={{
-          opacity: showLogo ? 1 : 0,
-          transition: 'opacity 0.3s ease'
-        }}
-        aria-label="Toggle menu"
-      >
-        ☰
-      </button>
-
-      {/* Nav links slide between x=0 (right-aligned) and x=centerOffset (centered) */}
-      <motion.ul
-        ref={navRef}
-        className={`nav-links ${mobileOpen ? 'open' : ''}`}
-        animate={{ x: showLogo ? 0 : centerOffset }}
-        transition={{ type: 'tween', duration: 0.4 }}
-      >
-        <li><a href="#hero"     onClick={()=>setMobileOpen(false)}>Home</a></li>
-        <li><a href="#services" onClick={()=>setMobileOpen(false)}>Services</a></li>
-        <li><a href="#contact"  onClick={()=>setMobileOpen(false)}>Contact</a></li>
-      </motion.ul>
     </header>
   );
 }
