@@ -188,7 +188,7 @@ body {
 .hero {
   position: relative;
   min-height: 100vh;
-  background: var(--dark-white);
+   background: linear-gradient(to bottom, var(--dark-white) 0%, #ffffff 100%);
   color: var(--text-light);
   display: flex;
   justify-content: center;
