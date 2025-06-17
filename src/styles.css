@@ -197,6 +197,7 @@ body {
   text-align: center;
   overscroll-behavior-y: contain; /* lock your scrollProgress to [0,1] */
   -webkit-overflow-scrolling: auto;
+  width: 100%;
 }
 
 .hero-inner {
@@ -206,6 +207,8 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 100%;
+  max-width: 100%;
 }
 
 .hero-title {
@@ -474,13 +477,20 @@ main {
 .services-grid {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   margin-top: 2rem;
   max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
   position: relative;
   z-index: 1;
+}
+
+/* Responsive: stack all cards vertically on smaller screens */
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Card styling */
@@ -557,7 +567,7 @@ main {
   justify-content: center;
 }
 
-/* PREFIX “Up to” */
+/* PREFIX "Up to" */
 .stat-prefix {
   font-family: 'Inter', sans-serif;
   font-size: 1rem;

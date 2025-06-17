@@ -12,6 +12,7 @@ const statsData = [
 const trustLogos = [
   { src: '/logos/logo1.png', alt: 'Client A' },
   { src: '/logos/logo2.png', alt: 'Client B' },
+  { src: '/logos/logo3.png', alt: 'Client C' },
 ];
 
 export default function Stats() {
@@ -40,7 +41,7 @@ export default function Stats() {
         ))}
       </div>
 
-      {/* “They trust us” heading */}
+      {/* "They trust us" heading */}
       <motion.h2
         className="stats-heading"
         style={{ marginTop: '3rem' }}

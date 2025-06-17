@@ -17,9 +17,12 @@ export default function Hero() {
   useLayoutEffect(() => {
     const r = mainRef.current?.getBoundingClientRect();
     if (r) {
-      const centerOfScreen = window.innerWidth / 2;
-      const centerOfElement = r.left + r.width / 2;
-      setDelta(centerOfScreen - centerOfElement);
+      // Use viewport center for more accurate centering
+      const viewportCenter = window.innerWidth / 2;
+      const elementCenter = r.left + r.width / 2;
+      // Add a small adjustment to fine-tune the centering
+      const adjustment = -20; // Negative value moves it left, positive moves it right
+      setDelta(viewportCenter - elementCenter + adjustment);
     }
   }, []);
 
