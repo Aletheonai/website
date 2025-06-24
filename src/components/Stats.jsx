@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import CountUp from 'react-countup';
 import '../styles.css';
 
 const statsData = [
-  { label: 'time saved across workflows',    number: 50 },
-  { label: 'reduction in operational costs',  number: 25 },
+  { label: 'time saved across workflows', number: 50 },
+  { label: 'reduction in operational costs', number: 25 },
   { label: 'improvement in delivery quality', number: 15 },
 ];
 
@@ -81,11 +81,18 @@ export default function Stats() {
     </section>
   );
 }
-
 function StatItem({ label, targetNumber, delay }) {
   const ref = useRef(null);
-  // useInView to know when this specific card scrolls into view
   const inView = useInView(ref, { once: true, margin: '-20% 0px' });
+  const [pop, setPop] = useState(false);
+
+  // Remove pop class after animation
+  React.useEffect(() => {
+    if (pop) {
+      const timeout = setTimeout(() => setPop(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [pop]);
 
   return (
     <motion.div
@@ -96,15 +103,16 @@ function StatItem({ label, targetNumber, delay }) {
       viewport={{ once: true, margin: '-20% 0px' }}
       transition={{ duration: 0.6, delay }}
     >
-      <h3 className="stat-number">
+      <h3 className={`stat-number${pop ? ' pop' : ''}`}>
         <span className="stat-prefix">Up to</span>
         {inView && (
           <CountUp
             start={0}
             end={targetNumber}
-            duration={1}
-            delay={delay}
+            duration={1.2}
+            delay={0.1}
             className="stat-value"
+            onEnd={() => setPop(true)}
           />
         )}
         <span className="stat-suffix">%</span>
@@ -113,3 +121,4 @@ function StatItem({ label, targetNumber, delay }) {
     </motion.div>
   );
 }
+

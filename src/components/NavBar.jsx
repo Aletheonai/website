@@ -8,6 +8,7 @@ export default function Navbar() {
   const [showLogo, setShowLogo] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shouldCollapse, setShouldCollapse] = useState(false);
+  const [navbarReady, setNavbarReady] = useState(true);
 
   useEffect(() => {
     const onScroll = () => {
@@ -18,6 +19,15 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, [lastScrollY]);
+
+  useEffect(() => {
+    if (showNavbar) {
+      setNavbarReady(true);
+    } else {
+      const timeout = setTimeout(() => setNavbarReady(false), 400);
+      return () => clearTimeout(timeout);
+    }
+  }, [showNavbar]);
 
   useEffect(() => {
     const hero = document.getElementById('hero');
@@ -40,7 +50,10 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header ref={headerRef} className={`navbar ${showNavbar ? 'active' : 'hidden'}`}>
+    <header
+      ref={headerRef}
+      className={`navbar ${showNavbar ? 'active' : 'hidden'}${!showLogo ? ' navbar-collapsed' : ''}${navbarReady ? ' navbar-ready' : ''}`}
+    >
       <div className="navbar-content">
         <div className="logo-wrapper">
           <span className={`logo-full ${showLogo ? 'visible' : 'hidden'}`}>ΛLETHEΘN</span>

@@ -1,14 +1,8 @@
 // src/components/Services.jsx
-import React, { useRef, useEffect } from 'react';
-import { motion, useInView, useAnimation } from 'framer-motion';
-import Pipeline from './Pipeline';
-import '../styles.css';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 
-const pipelineSteps = [
-  { key: 'training', label: 'Training' },
-  { key: 'assessment', label: 'Assessment' },
-  { key: 'integration', label: 'Integration' },
-];
+import '../styles.css';
 
 const servicesList = [
   {
@@ -28,24 +22,49 @@ const servicesList = [
   },
 ];
 
-export default function Services() {
-  const sectionRef = useRef(null);
-  const sentinelRef = useRef(null); // 👈 sentinel placed before the grid
-
-  const controls = useAnimation();
-  const shouldShowGrid = useInView(sentinelRef, {
-    margin: '-20% 0px -20% 0px', // triggers earlier
-    once: true,
+function ServiceCard({ service, index }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, {
+    margin: '-45% 0px -45% 0px',
+    once: false, // Allow multiple triggers
   });
 
-  useEffect(() => {
-    if (shouldShowGrid) {
-      controls.start({ opacity: 1, y: 0 });
-    }
-  }, [shouldShowGrid, controls]);
-
   return (
-    <section id="services" className="services-section" ref={sectionRef}>
+    <motion.div
+      className={`service-card ${isInView ? 'expanded' : ''}`}
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ 
+        scale: 1.05,
+        rotateY: 2,
+        rotateX: 1,
+        y: -8,
+        backgroundColor: "rgba(248, 249, 252, 0.95)",
+        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+        borderColor: "rgba(127, 86, 217, 0.4)",
+        transition: { duration: 0.3, ease: "easeOut" }
+      }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <h3>{service.title}</h3>
+      <motion.p
+        initial={{ opacity: 0, height: 0 }}
+        animate={isInView ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ overflow: 'hidden' }}
+      >
+        {service.description}
+      </motion.p>
+    </motion.div>
+  );
+}
+
+export default function Services() {
+  return (
+    <section id="services" className="services-section">
       <motion.h2
         className="services-heading"
         initial={{ opacity: 0, y: 40 }}
@@ -56,32 +75,11 @@ export default function Services() {
         Our Services
       </motion.h2>
 
-      <Pipeline steps={pipelineSteps} />
-
-      {/* 👇 Sentinel triggers grid entrance early */}
-      <div ref={sentinelRef} style={{ height: '1px' }} />
-
-      <motion.div
-        className="services-grid"
-        animate={controls}
-        initial={{ opacity: 0, y: 40 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        style={{ position: 'relative', zIndex: 1, paddingTop: '6rem' }}
-      >
-        {servicesList.map((svc) => (
-          <motion.div
-            className="service-card"
-            key={svc.key}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            whileHover={{ scale: 1.03 }}
-          >
-            <h3>{svc.title}</h3>
-            <p>{svc.description}</p>
-          </motion.div>
+      <div className="services-grid" style={{ paddingTop: '6rem' }}>
+        {servicesList.map((service, index) => (
+          <ServiceCard key={service.key} service={service} index={index} />
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 }
