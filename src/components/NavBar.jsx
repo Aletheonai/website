@@ -30,14 +30,31 @@ export default function Navbar() {
   }, [showNavbar]);
 
   useEffect(() => {
-    const hero = document.getElementById('hero');
-    if (!hero) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => setShowLogo(entry.intersectionRatio < 0.5),
-      { threshold: [0.5] }
-    );
-    obs.observe(hero);
-    return () => obs.disconnect();
+    const setupIntersectionObserver = () => {
+      const services = document.getElementById('services');
+      if (!services) {
+        console.log('Services element not found, retrying...');
+        setTimeout(setupIntersectionObserver, 100);
+        return;
+      }
+      
+      console.log('Services element found, setting up observer');
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          const shouldShowFullLogo = entry.isIntersecting;
+          console.log('Services intersection:', entry.isIntersecting, 'Show full logo:', shouldShowFullLogo);
+          setShowLogo(shouldShowFullLogo);
+        },
+        { 
+          threshold: 0.1,
+          rootMargin: '-20% 0px 0px 0px'
+        }
+      );
+      obs.observe(services);
+      return () => obs.disconnect();
+    };
+
+    setupIntersectionObserver();
   }, []);
 
   useEffect(() => {
@@ -52,7 +69,7 @@ export default function Navbar() {
   return (
     <header
       ref={headerRef}
-      className={`navbar ${showNavbar ? 'active' : 'hidden'}${!showLogo ? ' navbar-collapsed' : ''}${navbarReady ? ' navbar-ready' : ''}`}
+      className={`navbar ${showNavbar ? 'active' : 'hidden'}${!showLogo ? ' navbar-collapsed' : ''}${shouldCollapse ? ' navbar-mobile' : ''}${navbarReady ? ' navbar-ready' : ''}`}
     >
       <div className="navbar-content">
         <div className="logo-wrapper">

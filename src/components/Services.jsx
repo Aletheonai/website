@@ -7,18 +7,18 @@ import '../styles.css';
 const servicesList = [
   {
     key: 'training',
-    title: 'AI Training',
-    description: 'Tailored AI sessions designed for enhancing your business needs.',
+    title: 'Leadership-Level Training',
+    description: 'We work with executives and top managers to explain how AI works, what it means for their business, and how to think about it strategically.',
   },
   {
     key: 'assessment',
-    title: 'AI Consulting',
-    description: 'Expert guidance to create an AI adoption roadmap for your enterprise.',
+    title: 'Digital Readiness',
+    description: 'Many companies aren’t ready to adopt AI yet. We assess their tools, workflows, and data and help them get to a place where AI can be used effectively.',
   },
   {
     key: 'integration',
-    title: 'AI Solutions Development & Deployment',
-    description: 'End-to-end development to maximize your business efficiency.',
+    title: 'AI Agent Platform',
+    description: 'Our platform connects with the digital tools a company already uses, processes their data, and enables AI agents to perform real business tasks.',
   },
 ];
 
@@ -75,7 +75,7 @@ export default function Services() {
         Our Services
       </motion.h2>
 
-      <div className="services-grid" style={{ paddingTop: '6rem' }}>
+      <div className="services-grid">
         {servicesList.map((service, index) => (
           <ServiceCard key={service.key} service={service} index={index} />
         ))}
