@@ -405,7 +405,7 @@ body {
   font-size: inherit;
   line-height: 1;
   vertical-align: baseline;
-  margin: 0 0.2ch;
+  margin: 0 clamp(0.1ch, 0.2vw, 0.3ch);
 }
 .char-swap .char {
   grid-area: 1 / 1 / 2 / 2;
@@ -895,6 +895,24 @@ html {
   .stat-item {
     margin-bottom: 0; /* Remove margin, use gap instead */
   }
+  
+  /* Mobile-specific hero improvements */
+  .hero-title {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .title-main {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .hero-inner {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -903,5 +921,15 @@ html {
     --mobile-subsection-spacing: clamp(1.25rem, 2.5vh, 2rem);
     --mobile-content-spacing: clamp(0.75rem, 1.5vh, 1.5rem);
     --mobile-element-spacing: clamp(0.5rem, 1vh, 1rem);
+  }
+  
+  /* Additional mobile improvements for very small screens */
+  .hero-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+    gap: clamp(0.05ch, 0.1vw, 0.2ch);
+  }
+  
+  .hero-inner {
+    padding: 0 0.5rem;
   }
 }

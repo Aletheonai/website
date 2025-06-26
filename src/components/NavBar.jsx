@@ -31,18 +31,19 @@ export default function Navbar() {
 
   useEffect(() => {
     const setupIntersectionObserver = () => {
-      const services = document.getElementById('services');
-      if (!services) {
-        console.log('Services element not found, retrying...');
+      const hero = document.getElementById('hero');
+      if (!hero) {
+        console.log('Hero element not found, retrying...');
         setTimeout(setupIntersectionObserver, 100);
         return;
       }
       
-      console.log('Services element found, setting up observer');
+      console.log('Hero element found, setting up observer');
       const obs = new IntersectionObserver(
         ([entry]) => {
-          const shouldShowFullLogo = entry.isIntersecting;
-          console.log('Services intersection:', entry.isIntersecting, 'Show full logo:', shouldShowFullLogo);
+          // Show full logo when NOT in Hero section (Hero is not intersecting)
+          const shouldShowFullLogo = !entry.isIntersecting;
+          console.log('Hero intersection:', entry.isIntersecting, 'Show full logo:', shouldShowFullLogo, 'Current section:', window.location.hash || 'top');
           setShowLogo(shouldShowFullLogo);
         },
         { 
@@ -50,7 +51,7 @@ export default function Navbar() {
           rootMargin: '-20% 0px 0px 0px'
         }
       );
-      obs.observe(services);
+      obs.observe(hero);
       return () => obs.disconnect();
     };
 

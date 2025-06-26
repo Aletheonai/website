@@ -1,5 +1,5 @@
 // src/components/Hero.jsx
-import React, { useRef, useState, useLayoutEffect, useEffect } from 'react';
+import React, { useRef, useState, useLayoutEffect, useEffect, useCallback, useMemo } from 'react';
 import {
   motion,
   useScroll,
@@ -15,6 +15,7 @@ export default function Hero() {
   const [delta, setDelta] = useState(0);
   const [sectionHeight, setSectionHeight] = useState('100vh');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [animationTriggered, setAnimationTriggered] = useState(false);
 
   // Track window size changes
   useEffect(() => {
@@ -26,27 +27,131 @@ export default function Hero() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate how far to slide ΛI into the center of the combined container (once)
-  useLayoutEffect(() => {
+  // Recalculate delta (used in multiple places)
+  const recalculateDelta = useCallback((retryCount = 0) => {
     const aiRect = aiRef.current?.getBoundingClientRect();
-    const centerRect = centerRef.current?.getBoundingClientRect();
-    if (aiRect && centerRect) {
+    if (aiRect && aiRect.width > 0) { // Ensure element is properly rendered
+      // Safari-compatible viewport calculation
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      let viewportWidth;
+      let safariOffset = 0;
+      
+      if (isIOS && isSafari) {
+        // Use document body width for iOS Safari and add offset
+        viewportWidth = document.body.clientWidth;
+        safariOffset = 10; // Small offset to compensate for Safari quirks
+      } else {
+        // Use visual viewport for other browsers
+        viewportWidth = window.visualViewport?.width || window.innerWidth;
+      }
+      
+      const viewportCenter = (viewportWidth / 2) + safariOffset;
       const aiCenter = aiRect.left + aiRect.width / 2;
-      const centerContainer = centerRect.left + centerRect.width / 2;
-      setDelta(centerContainer - aiCenter);
+      const rawDelta = viewportCenter - aiCenter;
+      
+      // Ensure we're moving to exactly the center
+      const finalDelta = rawDelta;
+      
+      // Debug logging to understand positioning
+      console.log('Safari offset centering debug:', {
+        userAgent: navigator.userAgent,
+        isSafari,
+        isIOS,
+        windowWidth,
+        viewportWidth,
+        safariOffset,
+        viewportCenter,
+        aiLeft: aiRect.left,
+        aiWidth: aiRect.width,
+        aiCenter,
+        rawDelta,
+        finalDelta,
+        expectedFinalPosition: aiCenter + finalDelta,
+        device: windowWidth <= 768 ? 'mobile' : 'desktop'
+      });
+      
+      setDelta(finalDelta);
+    } else if (retryCount < 5) {
+      // If element isn't ready, retry after a short delay (max 5 retries)
+      setTimeout(() => {
+        recalculateDelta(retryCount + 1);
+      }, 100);
     }
-
-    // Calculate section height to accommodate the animation
-    const extraHeight = window.innerHeight * 1.5; // Increased from 0.8 to 1.5 for longer hold
-    setSectionHeight(`calc(100vh + ${extraHeight}px)`);
   }, [windowWidth]);
+
+  // Initial layout calc and section height setup
+  useLayoutEffect(() => {
+    recalculateDelta();
+    const extraHeight = window.innerHeight * 1.5;
+    setSectionHeight(`calc(100vh + ${extraHeight}px)`);
+  }, [windowWidth, recalculateDelta]);
+
+  // Recalculate delta when returning from background (iOS Safari fix)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Only recalculate if we're at the top of the page and animation hasn't been triggered yet
+        if (window.scrollY < 100 && !animationTriggered) {
+          // Wait for the next frame to ensure DOM is ready
+          requestAnimationFrame(() => {
+            // Add a small delay to ensure viewport is stable
+            setTimeout(() => {
+              recalculateDelta();
+            }, 50);
+          });
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [recalculateDelta, animationTriggered]);
+
+  // Debug effect to monitor AI text position during animation
+  useEffect(() => {
+    const checkPosition = () => {
+      const aiRect = aiRef.current?.getBoundingClientRect();
+      if (aiRect) {
+        const viewportWidth = window.visualViewport?.width || window.innerWidth;
+        const viewportCenter = viewportWidth / 2;
+        const aiCenter = aiRect.left + aiRect.width / 2;
+        const distanceFromCenter = Math.abs(viewportCenter - aiCenter);
+        
+        console.log('Position check:', {
+          aiCenter,
+          viewportCenter,
+          distanceFromCenter,
+          isCentered: distanceFromCenter < 5
+        });
+      }
+    };
+    
+    // Check position after animation completes
+    const timer = setTimeout(checkPosition, 2000);
+    return () => clearTimeout(timer);
+  }, [delta]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
 
-  // Raw transforms
+  // Track when animation is triggered
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on('change', (latest) => {
+      if (latest > 0.05 && !animationTriggered) {
+        setAnimationTriggered(true);
+      } else if (latest < 0.02 && animationTriggered) {
+        // Reset animation state when scrolled back to top
+        setAnimationTriggered(false);
+      }
+    });
+    
+    return unsubscribe;
+  }, [scrollYProgress, animationTriggered]);
+
   const aiXRaw       = useTransform(scrollYProgress, [0.05, 0.15], [0, delta]);
   const zoomRaw      = useTransform(scrollYProgress, [0,    0.10], [1, 1.1]);
   const foldRaw      = useTransform(scrollYProgress, [0.10, 0.12], [0, -90]);
@@ -54,30 +159,21 @@ export default function Hero() {
   const subORaw      = useTransform(scrollYProgress, [0.12, 0.20], [0, 1]);
   const lOpacityRaw  = useTransform(scrollYProgress, [0,    0.12], [1, 0]);
   const iOpacityRaw  = useTransform(scrollYProgress, [0,    0.12], [0, 1]);
-  
-  // Fade out the entire hero content when animation is complete - extended duration
   const heroFadeOutRaw = useTransform(scrollYProgress, [0.20, 0.60], [1, 0]);
 
-  // Smoothed springs
   const springConfig = { stiffness: 100, damping: 15 };
+  const aiX          = useSpring(aiXRaw, springConfig);
+  const zoom         = useSpring(zoomRaw, springConfig);
+  const fold         = useSpring(foldRaw, springConfig);
+  const fadeOut      = useSpring(fadeOutRaw, springConfig);
+  const subO         = useSpring(subORaw, springConfig);
+  const lOpacity     = useSpring(lOpacityRaw, springConfig);
+  const iOpacity     = useSpring(iOpacityRaw, springConfig);
+  const heroFadeOut  = useSpring(heroFadeOutRaw, springConfig);
 
-  const aiX     = useSpring(aiXRaw, springConfig);
-  const zoom    = useSpring(zoomRaw, springConfig);
-  const fold    = useSpring(foldRaw, springConfig);
-  const fadeOut = useSpring(fadeOutRaw, springConfig);
-  const subO    = useSpring(subORaw, springConfig);
-  const lOpacity = useSpring(lOpacityRaw, springConfig);
-  const iOpacity = useSpring(iOpacityRaw, springConfig);
-  const heroFadeOut = useSpring(heroFadeOutRaw, springConfig);
-
-  // Calculate button offset based on window size and AI position
   const buttonOffset = useTransform(aiX, (x) => {
-    // On mobile (smaller screens), the title stacks vertically, so we need different centering
-    if (windowWidth <= 768) {
-      return x * 0.5; // Reduce the offset for mobile
-    }
-    // For desktop, move the button by half the AI movement to center them together
-    return x * 0.5; // This will center the AI text with respect to the button
+    // The button should move by the same amount as the AI text to maintain perfect alignment
+    return x;
   });
 
   return (
@@ -85,13 +181,13 @@ export default function Hero() {
       id="hero"
       ref={sectionRef}
       className="hero"
-      style={{ 
+      style={{
         overflow: 'hidden',
         height: sectionHeight,
         position: 'relative'
       }}
     >
-      <div 
+      <div
         className="hero-inner"
         style={{
           position: 'fixed',
@@ -167,9 +263,9 @@ export default function Hero() {
             ))}
           </motion.h1>
 
-          <motion.div 
-            className="hero-subhead" 
-            style={{ 
+          <motion.div
+            className="hero-subhead"
+            style={{
               opacity: subO,
               display: 'flex',
               flexDirection: 'column',
@@ -178,7 +274,8 @@ export default function Hero() {
               transform: `translateX(${buttonOffset}px)`
             }}
           >
-            <h2>Helping companies understand, integrate, and use AI the right way.
+            <h2>
+              Helping companies understand, integrate, and use AI the right way.
             </h2>
             <a href="#contact" className="cta-button">
               Get in Touch
