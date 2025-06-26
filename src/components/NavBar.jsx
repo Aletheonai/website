@@ -81,9 +81,69 @@ export default function Navbar() {
         <div className="link-area justify-right">
           {!shouldCollapse && (
             <ul className="nav-links desktop">
-              <li><a href="#hero">Home</a></li>
-              <li><a href="#services">Services</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a 
+                href="#hero"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Home link clicked');
+                  // Temporarily disable smooth scrolling to bypass Services interference
+                  const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                  document.documentElement.style.scrollBehavior = 'auto';
+                  
+                  // Force scroll to Hero
+                  const heroSection = document.getElementById('hero');
+                  if (heroSection) {
+                    heroSection.scrollIntoView();
+                  }
+                  
+                  // Restore smooth scrolling after a delay
+                  setTimeout(() => {
+                    document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                  }, 100);
+                }}
+              >Home</a></li>
+              <li><a 
+                href="#services"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Services link clicked');
+                  // Temporarily disable smooth scrolling to bypass Services interference
+                  const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                  document.documentElement.style.scrollBehavior = 'auto';
+                  
+                  // Force scroll to Services
+                  const servicesSection = document.getElementById('services');
+                  if (servicesSection) {
+                    servicesSection.scrollIntoView();
+                  }
+                  
+                  // Restore smooth scrolling after a delay
+                  setTimeout(() => {
+                    document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                  }, 100);
+                }}
+              >Services</a></li>
+              <li><a 
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Contact link clicked');
+                  // Temporarily disable smooth scrolling to bypass Services interference
+                  const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                  document.documentElement.style.scrollBehavior = 'auto';
+                  
+                  // Force scroll to Contact
+                  const contactSection = document.getElementById('contact');
+                  if (contactSection) {
+                    contactSection.scrollIntoView();
+                  }
+                  
+                  // Restore smooth scrolling after a delay
+                  setTimeout(() => {
+                    document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                  }, 100);
+                }}
+              >Contact</a></li>
             </ul>
           )}
 
@@ -98,9 +158,72 @@ export default function Navbar() {
               </button>
               {mobileOpen && (
                 <ul className="nav-links mobile-dropdown">
-                  <li><a href="#hero" onClick={() => setMobileOpen(false)}>Home</a></li>
-                  <li><a href="#services" onClick={() => setMobileOpen(false)}>Services</a></li>
-                  <li><a href="#contact" onClick={() => setMobileOpen(false)}>Contact</a></li>
+                  <li><a 
+                    href="#hero"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileOpen(false);
+                      console.log('Home link clicked');
+                      // Temporarily disable smooth scrolling to bypass Services interference
+                      const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                      document.documentElement.style.scrollBehavior = 'auto';
+                      
+                      // Force scroll to Hero
+                      const heroSection = document.getElementById('hero');
+                      if (heroSection) {
+                        heroSection.scrollIntoView();
+                      }
+                      
+                      // Restore smooth scrolling after a delay
+                      setTimeout(() => {
+                        document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                      }, 100);
+                    }}
+                  >Home</a></li>
+                  <li><a 
+                    href="#services"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileOpen(false);
+                      console.log('Services link clicked');
+                      // Temporarily disable smooth scrolling to bypass Services interference
+                      const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                      document.documentElement.style.scrollBehavior = 'auto';
+                      
+                      // Force scroll to Services
+                      const servicesSection = document.getElementById('services');
+                      if (servicesSection) {
+                        servicesSection.scrollIntoView();
+                      }
+                      
+                      // Restore smooth scrolling after a delay
+                      setTimeout(() => {
+                        document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                      }, 100);
+                    }}
+                  >Services</a></li>
+                  <li><a 
+                    href="#contact"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileOpen(false);
+                      console.log('Contact link clicked');
+                      // Temporarily disable smooth scrolling to bypass Services interference
+                      const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                      document.documentElement.style.scrollBehavior = 'auto';
+                      
+                      // Force scroll to Contact
+                      const contactSection = document.getElementById('contact');
+                      if (contactSection) {
+                        contactSection.scrollIntoView();
+                      }
+                      
+                      // Restore smooth scrolling after a delay
+                      setTimeout(() => {
+                        document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                      }, 100);
+                    }}
+                  >Contact</a></li>
                 </ul>
               )}
             </div>
