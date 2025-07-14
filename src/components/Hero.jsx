@@ -177,7 +177,7 @@ export default function Hero() {
         position: 'relative'
       }}
     >
-      {/* Modern Dotted Background Pattern */}
+      {/* AI Particle System Background */}
       <motion.div
         className="hero-background-pattern"
         style={{
@@ -187,9 +187,9 @@ export default function Hero() {
           width: '100%',
           height: '100%',
           backgroundImage: `
-            radial-gradient(circle, rgba(108, 48, 130, 0.35) 0px, transparent 2.5px)
+            radial-gradient(circle, rgba(108, 48, 130, 0.25) 0px, transparent 2px)
           `,
-          backgroundSize: '100px 100px',
+          backgroundSize: '120px 120px',
           backgroundPosition: '0 0',
           y: backgroundY,
           opacity: backgroundOpacity,
