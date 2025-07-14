@@ -171,11 +171,6 @@ export default function Hero() {
   const iOpacity     = useSpring(iOpacityRaw, springConfig);
   const heroFadeOut  = useSpring(heroFadeOutRaw, springConfig);
 
-  const buttonOffset = useTransform(aiX, (x) => {
-    // The button should move by the same amount as the AI text to maintain perfect alignment
-    return x;
-  });
-
   return (
     <section
       id="hero"
@@ -270,13 +265,10 @@ export default function Hero() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              width: '100%',
-              transform: `translateX(${buttonOffset}px)`
+              width: '100%'
             }}
           >
-            <h2>
-              Helping companies understand, integrate, and use AI the right way.
-            </h2>
+            <h2>the right way.</h2>
             <a href="#contact" className="cta-button">
               Get in Touch
             </a>

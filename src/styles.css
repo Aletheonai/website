@@ -7,7 +7,7 @@ html, body {
   padding: 0;
 }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Epilogue', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: #333;
@@ -323,10 +323,10 @@ body {
 :root {
   --bg-dark:       #ffffff;
   --text-light:    #1f2937;
-  --accent-purple: #7F56D9;
-  --accent-blue:   #7F56D9; /*#1E88E5;*/
-  --accent-green:  #059669;
-  --light-gray:    #4B5563;
+  --accent-purple: #6C3082;
+  --accent-blue:   #6C3082; /*#1E88E5;*/
+  --accent-green:  #468230;
+  --light-gray:    #2d2b2b;
   --dark-white:    #F8F9FA;
   --ghost-white:   #F5F5F5;
   --card-bg:       #f8f9fc;       /* very light neutral */
@@ -380,7 +380,9 @@ body {
   align-items: baseline;
   gap: clamp(0.1ch, 0.2vw, 0.3ch);
   font-size: clamp(2rem, 8vw, 6rem);
-  font-weight: 900;
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  letter-spacing: -0.01em;
   margin: 0;
   perspective: 800px;
   overflow: hidden;
@@ -437,24 +439,31 @@ body {
   justify-content: center;
   width: 100%;
   text-align: center;
+  max-width: 100%;
 }
 .hero-subhead h2 {
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 700;
   margin-bottom: clamp(1rem, 2vh, 1.5rem);
+  text-align: center;
+  width: 100%;
 }
 .cta-button {
   padding: clamp(8px, 2vh, 12px) clamp(16px, 4vw, 24px);
-  background: var(--accent-blue);
+  background: var(--accent-purple);
   color: #ffffff;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
   font-size: clamp(0.9rem, 2.5vw, 1rem);
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-align: center;
 }
 .cta-button:hover {
-/*  background: #005f99;*/
+  background: #5a2a6b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 48, 130, 0.3);
 }
 
 main {
