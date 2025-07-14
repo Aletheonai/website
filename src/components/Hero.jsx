@@ -31,48 +31,27 @@ export default function Hero() {
   const recalculateDelta = useCallback((retryCount = 0) => {
     const aiRect = aiRef.current?.getBoundingClientRect();
     if (aiRect && aiRect.width > 0) { // Ensure element is properly rendered
-      // Safari-compatible viewport calculation
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      
-      let viewportWidth;
-      let safariOffset = 0;
-      
-      if (isIOS && isSafari) {
-        // Use document body width for iOS Safari and add offset
-        viewportWidth = document.body.clientWidth;
-        safariOffset = 10; // Small offset to compensate for Safari quirks
-      } else {
-        // Use visual viewport for other browsers
-        viewportWidth = window.visualViewport?.width || window.innerWidth;
-      }
-      
-      const viewportCenter = (viewportWidth / 2) + safariOffset;
+      // Use a more reliable approach for all browsers including iOS Safari
+      const viewportWidth = window.visualViewport?.width || window.innerWidth;
+      const viewportCenter = viewportWidth / 2;
       const aiCenter = aiRect.left + aiRect.width / 2;
       const rawDelta = viewportCenter - aiCenter;
       
-      // Ensure we're moving to exactly the center
-      const finalDelta = rawDelta;
-      
       // Debug logging to understand positioning
-      console.log('Safari offset centering debug:', {
+      console.log('Centering debug:', {
         userAgent: navigator.userAgent,
-        isSafari,
-        isIOS,
         windowWidth,
         viewportWidth,
-        safariOffset,
         viewportCenter,
         aiLeft: aiRect.left,
         aiWidth: aiRect.width,
         aiCenter,
         rawDelta,
-        finalDelta,
-        expectedFinalPosition: aiCenter + finalDelta,
+        expectedFinalPosition: aiCenter + rawDelta,
         device: windowWidth <= 768 ? 'mobile' : 'desktop'
       });
       
-      setDelta(finalDelta);
+      setDelta(rawDelta);
     } else if (retryCount < 5) {
       // If element isn't ready, retry after a short delay (max 5 retries)
       setTimeout(() => {
@@ -105,8 +84,20 @@ export default function Hero() {
       }
     };
 
+    const handleOrientationChange = () => {
+      // Recalculate on orientation change for mobile devices
+      setTimeout(() => {
+        recalculateDelta();
+      }, 100);
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
   }, [recalculateDelta, animationTriggered]);
 
   // Debug effect to monitor AI text position during animation
