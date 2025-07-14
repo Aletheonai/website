@@ -171,6 +171,10 @@ export default function Hero() {
   const iOpacity     = useSpring(iOpacityRaw, springConfig);
   const heroFadeOut  = useSpring(heroFadeOutRaw, springConfig);
 
+  // Background pattern animations
+  const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const backgroundOpacity = useTransform(scrollYProgress, [0.10, 0.15], [0.8, 0]);
+
   return (
     <section
       id="hero"
@@ -182,6 +186,27 @@ export default function Hero() {
         position: 'relative'
       }}
     >
+      {/* Modern Dotted Background Pattern */}
+      <motion.div
+        className="hero-background-pattern"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: `
+            radial-gradient(circle, rgba(108, 48, 130, 0.35) 0px, transparent 2.5px)
+          `,
+          backgroundSize: '100px 100px',
+          backgroundPosition: '0 0',
+          y: backgroundY,
+          opacity: backgroundOpacity,
+          pointerEvents: 'none',
+          zIndex: 1
+        }}
+      />
+
       <div
         className="hero-inner"
         style={{
