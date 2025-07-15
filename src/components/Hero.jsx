@@ -253,7 +253,7 @@ export default function Hero() {
               </span>
             </motion.span>
 
-            {['E', 'T', 'H', 'E', 'Θ', 'N'].map((c, i) => (
+            {['E', 'T', 'H', 'E', 'O', 'N'].map((c, i) => (
               <motion.span
                 key={i}
                 className={`char ${

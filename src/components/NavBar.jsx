@@ -74,8 +74,34 @@ export default function Navbar() {
     >
       <div className="navbar-content">
         <div className="logo-wrapper">
-          <span className={`logo-full ${showLogo ? 'visible' : 'hidden'}`}>ΛLETHEΘN</span>
-          <span className={`logo-mini ${!showLogo ? 'visible' : 'hidden'}`}>ΛI</span>
+          {/* <span className={`logo-full ${showLogo ? 'visible' : 'hidden'}`}>ΛLETHEΘN</span> */}
+          <span className={`logo-full ${showLogo ? 'visible' : 'hidden'}`}>
+            <img
+              src="/logos/Aletheon-full-logo.png"
+              // alt="Aletheon Full Logo"
+              style={{
+                height: '2.2em',
+                width: 'auto',
+                verticalAlign: 'middle',
+                display: 'inline-block',
+                // marginRight: '0.1em',
+              }}
+            />
+          </span>
+          <span className={`logo-mini ${!showLogo ? 'visible' : 'hidden'}`}>
+            <img
+              src="/logos/aletheon-AI-emblem.png"
+              alt="Aletheon Logo A"
+              style={{
+                height: '2.2em',
+                width: 'auto',
+                verticalAlign: 'middle',
+                display: 'inline-block',
+                marginRight: '0.1em',
+                transform: 'translateY(0.08em)'
+              }}
+            />
+          </span>
         </div>
 
         <div className="link-area justify-right">
