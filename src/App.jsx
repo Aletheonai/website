@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from './components/Navbar';
+import NavBar from './components/NavBar';
 import Hero from './components/Hero';
 import Services from './components/Services';
 import Stats from './components/Stats';
@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 function App() {
   return (
     <>
-      <Navbar />
+      <NavBar />
       <Hero />
       {/* Main content sections */}
       <main>
