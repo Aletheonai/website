@@ -31,23 +31,56 @@ export default function Hero() {
   const recalculateDelta = useCallback((retryCount = 0) => {
     const aiRect = aiRef.current?.getBoundingClientRect();
     if (aiRect && aiRect.width > 0) { // Ensure element is properly rendered
-      // Use a more reliable approach for all browsers including iOS Safari
-      const viewportWidth = window.visualViewport?.width || window.innerWidth;
-      const viewportCenter = viewportWidth / 2;
+      // Get the button element to align with
+      const button = document.querySelector('.cta-button');
+      let targetCenter = window.innerWidth / 2; // Default to viewport center
+      
+      if (button) {
+        const buttonRect = button.getBoundingClientRect();
+        targetCenter = buttonRect.left + buttonRect.width / 2;
+        console.log('Button found:', {
+          buttonLeft: buttonRect.left,
+          buttonWidth: buttonRect.width,
+          buttonCenter: targetCenter
+        });
+      } else {
+        console.log('Button not found, using viewport center');
+        // If button not found and we haven't retried too many times, retry
+        if (retryCount < 3) {
+          setTimeout(() => {
+            recalculateDelta(retryCount + 1);
+          }, 200);
+          return;
+        }
+      }
+      
+      // Calculate the center of the current "AL" text
       const aiCenter = aiRect.left + aiRect.width / 2;
-      const rawDelta = viewportCenter - aiCenter;
+      
+      // Estimate the final "AI" width (assuming "I" is about 60% the width of "L")
+      const currentWidth = aiRect.width;
+      const estimatedFinalWidth = currentWidth * 0.8; // "AI" will be about 80% of "AL" width
+      const widthDifference = currentWidth - estimatedFinalWidth;
+      
+      // Calculate where the center of "AI" will be
+      const finalAICenter = aiCenter - (widthDifference / 2);
+      
+      // Calculate the delta needed to move "AI" to button center
+      const rawDelta = targetCenter - finalAICenter;
       
       // Debug logging to understand positioning
       console.log('Centering debug:', {
         userAgent: navigator.userAgent,
         windowWidth,
-        viewportWidth,
-        viewportCenter,
+        viewportWidth: window.innerWidth,
+        targetCenter,
         aiLeft: aiRect.left,
         aiWidth: aiRect.width,
         aiCenter,
+        finalAICenter,
+        widthDifference,
         rawDelta,
-        expectedFinalPosition: aiCenter + rawDelta,
+        expectedFinalPosition: finalAICenter + rawDelta,
         device: windowWidth <= 768 ? 'mobile' : 'desktop'
       });
       
@@ -62,7 +95,10 @@ export default function Hero() {
 
   // Initial layout calc and section height setup
   useLayoutEffect(() => {
-    recalculateDelta();
+    // Add a delay to ensure the button is rendered
+    setTimeout(() => {
+      recalculateDelta();
+    }, 300);
     const extraHeight = window.innerHeight * 1.5;
     setSectionHeight(`calc(100vh + ${extraHeight}px)`);
   }, [windowWidth, recalculateDelta]);
@@ -105,14 +141,32 @@ export default function Hero() {
     const checkPosition = () => {
       const aiRect = aiRef.current?.getBoundingClientRect();
       if (aiRect) {
-        const viewportWidth = window.visualViewport?.width || window.innerWidth;
-        const viewportCenter = viewportWidth / 2;
+        // Get the button element to align with
+        const button = document.querySelector('.cta-button');
+        let targetCenter = window.innerWidth / 2; // Default to viewport center
+        
+        if (button) {
+          const buttonRect = button.getBoundingClientRect();
+          targetCenter = buttonRect.left + buttonRect.width / 2;
+        }
+        
+        // Calculate the center of the current "AL" text
         const aiCenter = aiRect.left + aiRect.width / 2;
-        const distanceFromCenter = Math.abs(viewportCenter - aiCenter);
+        
+        // Estimate the final "AI" width
+        const currentWidth = aiRect.width;
+        const estimatedFinalWidth = currentWidth * 0.8;
+        const widthDifference = currentWidth - estimatedFinalWidth;
+        
+        // Calculate where the center of "AI" will be
+        const finalAICenter = aiCenter - (widthDifference / 2);
+        const distanceFromCenter = Math.abs(targetCenter - finalAICenter);
         
         console.log('Position check:', {
           aiCenter,
-          viewportCenter,
+          finalAICenter,
+          targetCenter,
+          widthDifference,
           distanceFromCenter,
           isCentered: distanceFromCenter < 5
         });
@@ -226,7 +280,7 @@ export default function Hero() {
             width: '100%'
           }}
         >
-          <motion.h1 className="hero-title" style={{ scale: zoom }}>
+          <motion.h1 className="hero-title" style={{ scale: zoom, fontFamily: 'Epilogue-Edited, sans-serif' }}>
             <motion.span
               ref={aiRef}
               className="title-main"
@@ -239,15 +293,16 @@ export default function Hero() {
                 backfaceVisibility: 'hidden',
                 WebkitTransformStyle: 'preserve-3d',
                 position: 'relative',
+                fontFamily: 'Epilogue-Edited, sans-serif',
               }}
             >
-              <span className="char char-violet">Λ</span>
+              <span className="char char-violet" style={{ fontFamily: 'Epilogue-Edited, sans-serif' }}>A</span>
 
               <span className="char-swap">
-                <motion.span className="char char-gray" style={{ opacity: lOpacity }}>
+                <motion.span className="char char-gray" style={{ opacity: lOpacity, fontFamily: 'Epilogue-Edited, sans-serif' }}>
                   L
                 </motion.span>
-                <motion.span className="char char-violet" style={{ opacity: iOpacity }}>
+                <motion.span className="char char-violet" style={{ opacity: iOpacity, fontFamily: 'Epilogue-Edited, sans-serif' }}>
                   I
                 </motion.span>
               </span>
@@ -267,6 +322,7 @@ export default function Hero() {
                   z: 0,
                   transform: 'translateZ(0)',
                   backfaceVisibility: 'hidden',
+                  fontFamily: 'Epilogue-Edited, sans-serif',
                 }}
               >
                 {c}
