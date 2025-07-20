@@ -13,6 +13,7 @@ const trustLogos = [
   { src: '/logos/logo1.png', alt: 'Client A' },
   { src: '/logos/logo2.png', alt: 'Client B' },
   { src: '/logos/logo3.png', alt: 'Client C' },
+  { src: '/logos/logo4.png', alt: 'Client D' },
 ];
 
 export default function Stats() {
@@ -74,7 +75,11 @@ export default function Stats() {
               }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              <img src={logo.src} alt={logo.alt} />
+              <img 
+                src={logo.src} 
+                alt={logo.alt} 
+                style={i === 3 ? { transform: 'scale(0.75)' } : {}}
+              />
             </motion.div>
           ))}
         </motion.div>

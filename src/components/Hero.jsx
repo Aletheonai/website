@@ -231,26 +231,7 @@ export default function Hero() {
         position: 'relative'
       }}
     >
-      {/* AI Particle System Background */}
-      <motion.div
-        className="hero-background-pattern"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundImage: `
-            radial-gradient(circle, rgba(108, 48, 130, 0.25) 0px, transparent 2px)
-          `,
-          backgroundSize: '120px 120px',
-          backgroundPosition: '0 0',
-          y: backgroundY,
-          opacity: backgroundOpacity,
-          pointerEvents: 'none',
-          zIndex: 1
-        }}
-      />
+
 
       <div
         className="hero-inner"
@@ -294,6 +275,7 @@ export default function Hero() {
                 WebkitTransformStyle: 'preserve-3d',
                 position: 'relative',
                 fontFamily: 'Epilogue-Edited, sans-serif',
+                gap: '0.1ch',
               }}
             >
               <span className="char char-violet" style={{ fontFamily: 'Epilogue-Edited, sans-serif' }}>A</span>
