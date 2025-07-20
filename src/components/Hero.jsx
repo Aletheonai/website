@@ -16,14 +16,183 @@ export default function Hero() {
   const [sectionHeight, setSectionHeight] = useState('100vh');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [animationTriggered, setAnimationTriggered] = useState(false);
+  const [navbarHeight, setNavbarHeight] = useState(84); // Default navbar height
+  const [heroTopPosition, setHeroTopPosition] = useState('104px'); // Default position (84px navbar + 20px buffer)
+  const [contentHeight, setContentHeight] = useState(300); // Estimated content height
 
-  // Track window size changes
+  // Track window size changes and navbar height
   useEffect(() => {
+        const calculateNavbarHeight = () => {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        const navbarRect = navbar.getBoundingClientRect();
+        const actualHeight = navbarRect.height + 20; // height + top offset
+        setNavbarHeight(actualHeight);
+        
+        // Calculate safe hero position - center when possible, position below navbar when necessary
+        const navbarBottom = actualHeight; // navbar height + top offset
+        const minDistanceFromNavbar = 20; // minimum distance from navbar bottom
+        const viewportHeight = window.innerHeight;
+        
+        // Calculate if we can safely center the content
+        const centerPosition = viewportHeight / 2;
+        const contentTopAtCenter = centerPosition - (contentHeight / 2);
+        const contentBottomAtCenter = centerPosition + (contentHeight / 2);
+        
+        // Check if centering would cause overlap with navbar
+        const wouldOverlapNavbar = contentTopAtCenter < (navbarBottom + minDistanceFromNavbar);
+        
+        // Check if centering would cause content to be cut off at bottom
+        const wouldBeCutOff = contentBottomAtCenter > (viewportHeight - 20);
+        
+        let newHeroTop;
+        if (wouldOverlapNavbar || wouldBeCutOff) {
+          // Position below navbar or adjust for bottom cutoff
+          const maxTopPosition = viewportHeight - contentHeight - 20; // 20px buffer from bottom
+          
+          if (navbarBottom + minDistanceFromNavbar > maxTopPosition) {
+            // If positioning below navbar would cut off content, position it higher but still below navbar
+            const minPosition = navbarBottom + 10;
+            const maxPosition = Math.max(maxTopPosition, minPosition);
+            newHeroTop = `${maxPosition}px`;
+          } else {
+            newHeroTop = `${navbarBottom + minDistanceFromNavbar}px`;
+          }
+        } else {
+          // Safe to center - use viewport center
+          newHeroTop = '50%';
+        }
+        
+        setHeroTopPosition(newHeroTop);
+        
+        // Update CSS custom property for use in CSS
+        document.documentElement.style.setProperty('--dynamic-navbar-height', `${actualHeight}px`);
+        console.log('Hero positioning calculated:', {
+          navbarHeight: navbarRect.height,
+          topOffset: 20,
+          totalHeight: actualHeight,
+          navbarBottom,
+          minDistanceFromNavbar,
+          viewportHeight,
+          contentHeight,
+          centerPosition: viewportHeight / 2,
+          contentTopAtCenter: (viewportHeight / 2) - (contentHeight / 2),
+          contentBottomAtCenter: (viewportHeight / 2) + (contentHeight / 2),
+          wouldOverlapNavbar,
+          wouldBeCutOff,
+          calculatedTop: newHeroTop,
+          isCentered: newHeroTop === '50%',
+          windowHeight: window.innerHeight,
+          windowWidth: window.innerWidth
+        });
+      } else {
+        // Fallback: retry after a short delay if navbar not found
+        setTimeout(() => {
+          const retryNavbar = document.querySelector('.navbar');
+          if (retryNavbar) {
+            const navbarRect = retryNavbar.getBoundingClientRect();
+            const actualHeight = navbarRect.height + 20;
+            setNavbarHeight(actualHeight);
+            
+            // Calculate safe hero position for fallback
+            const navbarBottom = actualHeight;
+            const minDistanceFromNavbar = 20;
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate if we can safely center the content
+            const centerPosition = viewportHeight / 2;
+            const contentTopAtCenter = centerPosition - (contentHeight / 2);
+            const contentBottomAtCenter = centerPosition + (contentHeight / 2);
+            
+            // Check if centering would cause overlap with navbar
+            const wouldOverlapNavbar = contentTopAtCenter < (navbarBottom + minDistanceFromNavbar);
+            
+            // Check if centering would cause content to be cut off at bottom
+            const wouldBeCutOff = contentBottomAtCenter > (viewportHeight - 20);
+            
+            let newHeroTop;
+            if (wouldOverlapNavbar || wouldBeCutOff) {
+              // Position below navbar or adjust for bottom cutoff
+              const maxTopPosition = viewportHeight - contentHeight - 20;
+              
+              if (navbarBottom + minDistanceFromNavbar > maxTopPosition) {
+                const minPosition = navbarBottom + 10;
+                const maxPosition = Math.max(maxTopPosition, minPosition);
+                newHeroTop = `${maxPosition}px`;
+              } else {
+                newHeroTop = `${navbarBottom + minDistanceFromNavbar}px`;
+              }
+            } else {
+              // Safe to center - use viewport center
+              newHeroTop = '50%';
+            }
+            setHeroTopPosition(newHeroTop);
+            
+            // Update CSS custom property
+            document.documentElement.style.setProperty('--dynamic-navbar-height', `${actualHeight}px`);
+          }
+        }, 200);
+      }
+    };
+
+    const measureContentHeight = () => {
+      const heroInner = document.querySelector('.hero-inner');
+      if (heroInner) {
+        const rect = heroInner.getBoundingClientRect();
+        setContentHeight(rect.height);
+        console.log('Content height measured:', rect.height);
+      }
+    };
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
+      calculateNavbarHeight();
+      measureContentHeight();
     };
     
+    // Initial calculation with delay to ensure navbar is rendered
+    setTimeout(() => {
+      handleResize();
+    }, 100);
+    
+    // Set up resize listener
     window.addEventListener('resize', handleResize);
+    
+    // Set up mutation observer to watch for navbar class changes
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      const observer = new MutationObserver(() => {
+        calculateNavbarHeight();
+      });
+      
+      observer.observe(navbar, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
+      
+      // Set up ResizeObserver to watch for content height changes
+      const heroInner = document.querySelector('.hero-inner');
+      if (heroInner) {
+        const resizeObserver = new ResizeObserver(() => {
+          measureContentHeight();
+          calculateNavbarHeight(); // Recalculate position when content height changes
+        });
+        
+        resizeObserver.observe(heroInner);
+        
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          observer.disconnect();
+          resizeObserver.disconnect();
+        };
+      }
+      
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        observer.disconnect();
+      };
+    }
+    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -101,6 +270,11 @@ export default function Hero() {
     }, 300);
     const extraHeight = window.innerHeight;
     setSectionHeight(`calc(70vh + ${extraHeight}px)`);
+    
+    // Measure content height after initial render
+    setTimeout(() => {
+      measureContentHeight();
+    }, 100);
   }, [windowWidth, recalculateDelta]);
 
   // Recalculate delta when returning from background (iOS Safari fix)
@@ -237,9 +411,9 @@ export default function Hero() {
         className="hero-inner"
         style={{
           position: 'fixed',
-          top: '50%',
+          top: heroTopPosition, // Dynamically calculated safe position
           left: '50%',
-          transform: 'translate(-50%, -50%)',
+          transform: heroTopPosition === '50%' ? 'translate(-50%, -50%)' : 'translateX(-50%)', // Center both axes when at 50%, otherwise just horizontally
           height: 'auto',
           display: 'flex',
           flexDirection: 'column',
@@ -247,7 +421,8 @@ export default function Hero() {
           justifyContent: 'center',
           width: '100%',
           maxWidth: '100%',
-          zIndex: 10
+          zIndex: 10,
+          // Visual indicators removed
         }}
       >
         <motion.div

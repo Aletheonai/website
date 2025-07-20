@@ -364,6 +364,7 @@ h1, h2, h3, h4, h5, h6 {
   --mobile-content-spacing: clamp(1rem, 2vh, 2rem);
   --mobile-element-spacing: clamp(0.75rem, 1.5vh, 1.5rem);
   --navbar-height: 84px; /* 64px navbar + 20px top offset */
+  --dynamic-navbar-height: 84px; /* Will be updated by JavaScript */
 }
 
 body {
@@ -380,7 +381,8 @@ body {
   width: 100vw;
   box-sizing: border-box;
   padding: 0 2vw;
-  padding-top: var(--navbar-height);
+  padding-top: calc(var(--dynamic-navbar-height, var(--navbar-height)) + 40px); /* Extra padding to ensure no overlap */
+  position: relative;
 }
 
 /* Remove fixed positioning and transforms from .hero-inner */
