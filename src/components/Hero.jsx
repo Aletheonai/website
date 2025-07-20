@@ -99,8 +99,8 @@ export default function Hero() {
     setTimeout(() => {
       recalculateDelta();
     }, 300);
-    const extraHeight = window.innerHeight * 1.5;
-    setSectionHeight(`calc(100vh + ${extraHeight}px)`);
+    const extraHeight = window.innerHeight;
+    setSectionHeight(`calc(70vh + ${extraHeight}px)`);
   }, [windowWidth, recalculateDelta]);
 
   // Recalculate delta when returning from background (iOS Safari fix)
@@ -340,7 +340,7 @@ export default function Hero() {
               width: '100%'
             }}
           >
-            <h2>the right way.</h2>
+            <h2>Accessible, Responsible, and Modular AI, Built for Team Acuity.</h2>
             <a href="#contact" className="cta-button">
               Get in Touch
             </a>
