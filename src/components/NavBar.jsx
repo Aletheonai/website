@@ -90,7 +90,7 @@ export default function Navbar() {
           </span>
           <span className={`logo-mini ${!showLogo ? 'visible' : 'hidden'}`}>
             <img
-              src="/logos/aletheon-AI-emblem.png"
+              src="/logos/Aletheon-AI-emblem.png"
               alt="Aletheon Logo A"
               style={{
                 height: '2.2em',
